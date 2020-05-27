@@ -39,16 +39,17 @@ public class UserRepositoryTest {
         user.setAccountStatus(AccountStatus.NEW);
     }
 
-    @Ignore
+    //@Ignore a collection with size <0>
+    //     but: collection size was <1>
     @Test
     public void shouldFindNoUsersIfRepositoryIsEmpty() {
 
         List<User> users = repository.findAll();
-
         assertThat(users, hasSize(0));
     }
 
-    @Ignore
+   // @Ignore
+   //Unique index or primary key violation
     @Test
     public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
         User persistedUser = entityManager.persist(user);
@@ -60,7 +61,8 @@ public class UserRepositoryTest {
                 equalTo(persistedUser.getEmail()));
     }
 
-    @Ignore
+   // @Ignore
+    //Unique index or primary key violation
     @Test
     public void shouldStoreANewUser() {
 
