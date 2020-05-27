@@ -3,7 +3,7 @@ package edu.iis.mto.blog.domain.repository;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -31,14 +31,30 @@ public class UserRepositoryTest {
 
     private User user;
 
+    private String firstName = "Jan", lastName="Komasa", email = "john@domain.com";
+    private String firstName2 = "Piotr", lastName2 = "Adamczyk", email2 = "ddddddddd@wp.com";
+
+    private String badFirstName="Alicja", badLastName = "Dziuda", badEmail ="djjdnjd@wp.pl";
+
+    private User user2;
+
+
     @Before
     public void setUp() {
         user = new User();
-        user.setFirstName("Jan");
-        user.setEmail("john@domain.com");
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
         user.setAccountStatus(AccountStatus.NEW);
     }
 
+    private void createSecondUser(){
+        user2 = new User();
+        user2.setFirstName(firstName);
+        user2.setLastName(lastName2);
+        user2.setEmail(email2);
+        user2.setAccountStatus(AccountStatus.NEW);
+    }
     //@Ignore a collection with size <0>
     //     but: collection size was <1>
     @Test
@@ -71,4 +87,56 @@ public class UserRepositoryTest {
         assertThat(persistedUser.getId(), notNullValue());
     }
 
+    @Test public void searchingByProperFirstName_shouldFindOneUser() {
+        //wywołanie perist powoduje dołączenie przekazanego obiektu do zbioru obiektów zarządzanych
+        // oraz wywołanie INSERT w momencie zakończenia transakcji
+        entityManager.persist(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(firstName,badLastName,badEmail);
+        assertTrue(users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void searchingByProperLastName_shouldFindOneUser() {
+        entityManager.persist(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(badFirstName,lastName,badEmail);
+        assertTrue(users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void searchingByProperFirstOrLastName_shouldFindTwoUsers() {
+        createSecondUser();
+        entityManager.persist(user);
+        entityManager.persist(user2);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(firstName,lastName2,badEmail);
+        assertTrue(users.contains(user));
+        assertTrue(users.contains(user2));
+        assertEquals(2, users.size());
+    }
+
+    @Test public void searchingByNotProperData_shouldFindZeroUsers() {
+        entityManager.persist(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(badFirstName,badLastName,badEmail);
+        assertFalse(users.contains(user));
+        assertEquals(0, users.size());
+    }
+
+    @Test public void shouldFindTwoUsers() {
+        createSecondUser();
+        entityManager.persist(user);
+        entityManager.persist(user2);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("","", "");
+        assertTrue(users.contains(user));
+        assertTrue(users.contains(user2));
+        assertEquals(2, users.size());
+    }
+
+    @Test public void searchingByPartOfProperEmail_shouldFindTwoUsers() {
+        createSecondUser();
+        entityManager.persist(user);
+        entityManager.persist(user2);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(badFirstName,badLastName, ".com");
+        assertTrue(users.contains(user));
+        assertTrue(users.contains(user2));
+        assertEquals(2, users.size());
+    }
 }
