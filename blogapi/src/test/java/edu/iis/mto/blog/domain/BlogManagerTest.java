@@ -85,6 +85,16 @@ public class BlogManagerTest {
         assertDoesNotThrow(()->blogService.addLikeToPost(user2.getId(),blogPost.getId()));
     }
 
+    @Test public void userWithNotConfirmedStatusTryLikePost_shouldThrowDomainError() {
+        user2 = createUser(firstName2,lastName2,email2,user2Id,AccountStatus.NEW);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(user2Id)).thenReturn(Optional.of(user2));
+        when(blogPostRepository.findById(postId)).thenReturn(Optional.of(blogPost));
+
+        assertNotSame(user2.getAccountStatus(), AccountStatus.CONFIRMED);
+        assertThrows(DomainError.class,()->blogService.addLikeToPost(user2.getId(),blogPost.getId()));
+    }
+
     private User createUser(String firstName, String lastName,String email,Long id,AccountStatus accountStatus){
         User user = new User();
         user.setFirstName(firstName);

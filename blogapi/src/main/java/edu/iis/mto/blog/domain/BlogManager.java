@@ -58,6 +58,10 @@ public class BlogManager extends DomainService implements BlogService {
             throw new DomainError(DomainError.SELF_LIKE);
         }
 
+         if(user.getAccountStatus() != AccountStatus.CONFIRMED){
+            throw new DomainError(DomainError.NOT_CONFIRMED_ACCOUNT);
+        }
+
         Optional<LikePost> existingLikeForPost = likePostRepository.findByUserAndPost(user, post);
         if (existingLikeForPost.isPresent()) {
             return false;
