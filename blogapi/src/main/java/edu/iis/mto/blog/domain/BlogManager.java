@@ -57,10 +57,12 @@ public class BlogManager extends DomainService implements BlogService {
                 .equals(userId)) {
             throw new DomainError(DomainError.SELF_LIKE);
         }
+
         Optional<LikePost> existingLikeForPost = likePostRepository.findByUserAndPost(user, post);
         if (existingLikeForPost.isPresent()) {
             return false;
         }
+
         LikePost likePost = new LikePost();
         likePost.setUser(user);
         likePost.setPost(post);
