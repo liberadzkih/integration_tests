@@ -19,7 +19,7 @@ public class ErrorHandling {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandling.class);
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(DataIntegrityViolationException.class)    //409
     public void dataIntegrityException(DataIntegrityViolationException exc, HttpServletResponse response) throws IOException {
         LOGGER.error(exc.getMessage());
         response.sendError(HttpStatus.CONFLICT.value(), exc.getMessage());
@@ -31,7 +31,7 @@ public class ErrorHandling {
         response.sendError(HttpStatus.BAD_REQUEST.value(), exc.getMessage());
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)  //404
     public void entityNotFound(EntityNotFoundException exc, HttpServletResponse response) throws IOException {
         LOGGER.error(exc.getMessage());
         response.sendError(HttpStatus.NOT_FOUND.value(), exc.getMessage());
