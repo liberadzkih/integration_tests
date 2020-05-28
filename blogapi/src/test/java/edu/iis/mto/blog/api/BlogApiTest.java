@@ -4,6 +4,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,8 @@ import edu.iis.mto.blog.dto.Id;
 import edu.iis.mto.blog.services.BlogService;
 import edu.iis.mto.blog.services.DataFinder;
 
+import javax.persistence.EntityNotFoundException;
+
 @RunWith(SpringRunner.class)
 @WebMvcTest(BlogApi.class)
 public class BlogApiTest {
@@ -38,8 +41,11 @@ public class BlogApiTest {
     private DataFinder finder;
 
     private UserRequest user;
+    Long newUserId;
 
     @Before public void setUp() throws Exception {
+        newUserId = 1L;
+
         user = new UserRequest();
         user.setEmail("john@domain.com");
         user.setFirstName("John");
@@ -48,7 +54,6 @@ public class BlogApiTest {
 
     @Test
     public void postBlogUserShouldResponseWithStatusCreatedAndNewUserId() throws Exception {
-        Long newUserId = 1L;
         when(blogService.createUser(user)).thenReturn(newUserId);
         String content = writeJson(user);
         mvc.perform(post("/blog/user").contentType(MediaType.APPLICATION_JSON)
@@ -72,5 +77,10 @@ public class BlogApiTest {
                                       .accept(MediaType.APPLICATION_JSON)
                                       .content(content))
                                         .andExpect(status().isConflict());
+    }
+
+    @Test public void gettingDataAboutNotExistingUser_shouldGenerateHTTPAnswerWith404Status() throws Exception {
+        when(finder.getUserData(newUserId)).thenThrow(new EntityNotFoundException("upssss"));
+        mvc.perform(get("/blog/user/"+newUserId.toString())).andExpect(status().isNotFound());
     }
 }
