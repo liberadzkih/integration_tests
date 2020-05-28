@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +36,20 @@ public class BlogApiTest {
     @MockBean
     private DataFinder finder;
 
-    @Test
-    public void postBlogUserShouldResponseWithStatusCreatedAndNewUserId() throws Exception {
-        Long newUserId = 1L;
-        UserRequest user = new UserRequest();
+    private UserRequest user;
+
+    @Before public void setUp() throws Exception {
+        user = new UserRequest();
         user.setEmail("john@domain.com");
         user.setFirstName("John");
         user.setLastName("Steward");
+    }
+
+    @Test
+    public void postBlogUserShouldResponseWithStatusCreatedAndNewUserId() throws Exception {
+        Long newUserId = 1L;
         when(blogService.createUser(user)).thenReturn(newUserId);
         String content = writeJson(user);
-
         mvc.perform(post("/blog/user").contentType(MediaType.APPLICATION_JSON)
                                       .accept(MediaType.APPLICATION_JSON)
                                       .content(content))
