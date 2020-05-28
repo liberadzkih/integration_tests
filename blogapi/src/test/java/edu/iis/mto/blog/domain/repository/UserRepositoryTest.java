@@ -32,7 +32,7 @@ public class UserRepositoryTest {
     private User user;
 
     private String firstName = "Jan", lastName="Komasa", email = "john@domain.com";
-    private String firstName2 = "Piotr", lastName2 = "Adamczyk", email2 = "ddddddddd@wp.com";
+    private String  lastName2 = "Adamczyk", email2 = "ddddddddd@wp.com";
 
     private String badFirstName="Alicja", badLastName = "Dziuda", badEmail ="djjdnjd@wp.pl";
 
