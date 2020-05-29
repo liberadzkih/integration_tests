@@ -27,7 +27,7 @@ public class CreateUserTest extends FunctionalTests {
     }
 
     @Test
-    public void createUserWithNotExistingEmailReturnsConflictStatus() {
+    public void createUserWithExistingEmailReturnsConflictStatus() {
         JSONObject jsonObj = new JSONObject().put("email", "tracy1@domain.com");
         given().accept(ContentType.JSON)
                .header("Content-Type", "application/json;charset=UTF-8")
