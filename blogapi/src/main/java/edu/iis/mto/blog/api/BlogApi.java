@@ -74,7 +74,7 @@ public class BlogApi {
     }
 
     @Operation(summary = "Add like to blog post")
-    @PostMapping(path = "user/{userId}/like/{postId}")
+    @PostMapping(path = "/user/{userId}/like/{postId}")
     public boolean addLikeToPost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId) {
         LOGGER.debug("add like to post endpoint called for userId '{}' and postId '{}'", userId, postId);
         return blogService.addLikeToPost(userId, postId);
