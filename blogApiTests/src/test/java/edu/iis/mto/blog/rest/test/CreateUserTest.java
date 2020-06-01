@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import io.restassured.http.ContentType;
 
+import java.util.stream.Collectors;
+
 public class CreateUserTest extends FunctionalTests {
 
     private static final String USER_API = "/blog/user";
@@ -24,5 +26,23 @@ public class CreateUserTest extends FunctionalTests {
                .statusCode(HttpStatus.SC_CREATED)
                .when()
                .post(USER_API);
+    }
+
+    @Test
+    public void shouldNotAllowUserCreationWithOccupiedEmail(){
+        JSONObject jsonObject = new JSONObject()
+                .put("email","215920@edu.p.lodz.pl")
+                .put("firstName","Dawid")
+                .put("lastName", "Witaszek");
+
+        given().accept(ContentType.JSON)
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_CONFLICT)
+                .when()
+                .post(USER_API);
     }
 }
