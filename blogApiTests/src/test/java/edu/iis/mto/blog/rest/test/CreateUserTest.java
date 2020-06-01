@@ -1,8 +1,10 @@
 package edu.iis.mto.blog.rest.test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.restassured.path.json.JsonPath;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.annotation.Target;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CreateUserTest extends FunctionalTests {
@@ -168,5 +171,58 @@ public class CreateUserTest extends FunctionalTests {
     }
 
 
+    @Test
+    public void canFindUsersPosts() {
+        JSONObject jsonObject = new JSONObject();
 
+        given()
+                .accept(ContentType.JSON)
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_OK)
+                .when()
+                .get(USER_API + "/2/post")
+                .then()
+                .assertThat()
+                .body("size()", is(1));
+    }
+
+    @Test
+    public void shouldNotFindRemovedUser() {
+        JSONObject jsonObject = new JSONObject();
+
+        given()
+                .accept(ContentType.JSON)
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .when()
+                .get(USER_API + "/3/post");
+    }
+
+    @Test
+    public void shouldReturnCorrectAmountOfLikes(){
+        JSONObject jsonObject = new JSONObject();
+        PersonData[] personData = given()
+                .accept(ContentType.JSON)
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_OK)
+                .when()
+                .get(USER_API + "/2/post")
+                .then()
+                .extract()
+                .as(PersonData[].class);
+        int likesCount = personData[0].getLikesCount();
+        assertEquals(1, likesCount);
+    }
 }
