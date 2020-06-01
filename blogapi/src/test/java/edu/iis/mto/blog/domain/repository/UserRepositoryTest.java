@@ -117,4 +117,22 @@ public class UserRepositoryTest {
         assertThat(result, hasSize(howManyRecords));
     }
 
+    @Test
+    public void findByLowerAndUpperCase() {
+        repository.save(user);
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail().toLowerCase());
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName().toLowerCase(), "Nonexistent");
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName().toLowerCase(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(1));
+
+        repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail().toUpperCase());
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName().toUpperCase(), "Nonexistent");
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName().toUpperCase(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(1));
+
+    }
 }
