@@ -2,8 +2,6 @@ package edu.iis.mto.blog.domain.repository;
 
 import edu.iis.mto.blog.domain.model.AccountStatus;
 import edu.iis.mto.blog.domain.model.User;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +69,16 @@ public class UserRepositoryTest {
         String otherEmail = "matthew@edu.p.lodz.pl";
         repository.save(user);
         List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName(), otherLastName, otherEmail);
+
+        assertThat(userList, hasSize(1));
+    }
+
+    @Test
+    public void shouldFindUserWhenLastNameIsCorrect() {
+        String otherFirstName = "Matthew";
+        String otherEmail = "matthew@edu.p.lodz.pl";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(otherFirstName, user.getLastName(), otherEmail);
 
         assertThat(userList, hasSize(1));
     }
