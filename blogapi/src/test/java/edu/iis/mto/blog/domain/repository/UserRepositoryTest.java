@@ -19,9 +19,11 @@ import static org.junit.Assert.assertThat;
 @DataJpaTest
 public class UserRepositoryTest {
 
-    @Autowired private TestEntityManager entityManager;
+    @Autowired
+    private TestEntityManager entityManager;
 
-    @Autowired private UserRepository repository;
+    @Autowired
+    private UserRepository repository;
 
     private User user;
 
