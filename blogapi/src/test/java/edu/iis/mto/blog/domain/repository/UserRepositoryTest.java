@@ -82,4 +82,14 @@ public class UserRepositoryTest {
 
         assertThat(userList, hasSize(1));
     }
+
+    @Test
+    public void shouldFindUserWhenEmailIsCorrect() {
+        String otherFirstName = "Matthew";
+        String otherLastName = "Noname";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(otherFirstName, otherLastName, user.getEmail());
+
+        assertThat(userList, hasSize(1));
+    }
 }
