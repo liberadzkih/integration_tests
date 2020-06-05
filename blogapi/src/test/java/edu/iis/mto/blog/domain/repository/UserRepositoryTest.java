@@ -2,6 +2,8 @@ package edu.iis.mto.blog.domain.repository;
 
 import edu.iis.mto.blog.domain.model.AccountStatus;
 import edu.iis.mto.blog.domain.model.User;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,7 @@ public class UserRepositoryTest {
     public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
@@ -60,5 +63,15 @@ public class UserRepositoryTest {
         User persistedUser = repository.save(user);
 
         assertThat(persistedUser.getId(), notNullValue());
+    }
+
+    @Test
+    public void shouldFindUserWhenFirstNameIsCorrect() {
+        String otherLastName = "Noname";
+        String otherEmail = "matthew@edu.p.lodz.pl";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName(), otherLastName, otherEmail);
+
+        assertThat(userList, hasSize(1));
     }
 }
