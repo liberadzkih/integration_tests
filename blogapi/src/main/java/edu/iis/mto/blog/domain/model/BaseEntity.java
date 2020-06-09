@@ -13,7 +13,7 @@ public class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //baza h2 nie wspiera strategii IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //chyba jednak wspiera
     private Long id;
 
     public Long getId() {
