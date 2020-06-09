@@ -51,4 +51,28 @@ public class LikePostTest extends FunctionalTests {
                .post("/blog/user/3/like/1");
     }
 
+    @Test
+    public void doubleLikingBlogPostDontChangeStatus() {
+        JSONObject jsonObj = new JSONObject().put("entry", "xxxxx");
+        given().accept(ContentType.JSON)
+               .header("Content-Type", "application/json;charset=UTF-8")
+               .body(jsonObj.toString())
+               .expect()
+               .log()
+               .all()
+               .statusCode(HttpStatus.SC_OK)
+               .when()
+               .post("/blog/user/1/like/1");
+
+        given().accept(ContentType.JSON)
+               .header("Content-Type", "application/json;charset=UTF-8")
+               .body(jsonObj.toString())
+               .expect()
+               .log()
+               .all()
+               .statusCode(HttpStatus.SC_OK)
+               .when()
+               .post("/blog/user/1/like/1");
+    }
+
 }
