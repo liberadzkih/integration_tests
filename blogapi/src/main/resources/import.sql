@@ -11,4 +11,3 @@ insert into user (account_status, email, first_name, last_name) values ('NEW', '
 insert into blog_post values(1,'hehe',3)
 insert into blog_post values(2,'hehe',4)
 insert into blog_post values(3,'hehe',4)
-
