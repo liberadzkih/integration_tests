@@ -50,4 +50,18 @@ public class SearchUserTest extends FunctionalTests {
                .when()
                .get("/blog/user/find?searchString=@domain.com");
     }
+
+    @Test
+    public void searchingUsersByLastNameShouldFindZeroUsers() {
+        given().accept(ContentType.JSON)
+               .header("Content-Type", "application/json;charset=UTF-8")
+               .expect()
+               .log()
+               .all()
+               .statusCode(HttpStatus.SC_OK)
+               .and()
+               .body("size",is(0))
+               .when()
+               .get("/blog/user/find?searchString=Kot");
+    }
 }
