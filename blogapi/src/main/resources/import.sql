@@ -3,6 +3,12 @@ insert into user (account_status, email, first_name, last_name) values ('CONFIRM
 insert into user (account_status, email, first_name, last_name) values ('NEW', 'Katarzyna@domain.com', 'Katarzyna', 'Cruise')
 insert into user (account_status, email, first_name, last_name) values ('CONFIRMED', 'Asia@domain.com', 'Asia', 'Dziuda')
 insert into user (account_status, email, first_name, last_name) values ('REMOVED', 'Tomek@domain.com', 'Tomek', 'Kot')
+insert into user (account_status, email, first_name, last_name) values ('CONFIRMED', 'A@domain.com', 'A', 'Dziuda')
+insert into user (account_status, email, first_name, last_name) values ('CONFIRMED', 'B@domain.com', 'B', 'Dziuda')
+insert into user (account_status, email, first_name, last_name) values ('CONFIRMED', 'dddd@domain.com', 'Laura', 'Dziuda')
+insert into user (account_status, email, first_name, last_name) values ('REMOVED', 'ddd@domain.com', 'Laura', 'Dziuda')
+insert into user (account_status, email, first_name, last_name) values ('NEW', 'dd@domain.com', 'Laura', 'Dziuda')
 insert into blog_post values(1,'hehe',3)
 insert into blog_post values(2,'hehe',4)
 insert into blog_post values(3,'hehe',4)
+
