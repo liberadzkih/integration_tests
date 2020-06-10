@@ -35,4 +35,19 @@ public class SearchUserTest extends FunctionalTests {
                .when()
                .get("/blog/user/find?searchString=dddd@domain.com");
     }
+
+
+    @Test
+    public void searchingUsersByPartOfEmailShouldFindOnlyNotRemovedUsers() {
+        given().accept(ContentType.JSON)
+               .header("Content-Type", "application/json;charset=UTF-8")
+               .expect()
+               .log()
+               .all()
+               .statusCode(HttpStatus.SC_OK)
+               .and()
+               .body("size",is(7))
+               .when()
+               .get("/blog/user/find?searchString=@domain.com");
+    }
 }
