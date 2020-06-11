@@ -46,8 +46,8 @@ public class BlogManager extends DomainService implements BlogService {
         User user = userRepository.findById(userId)
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
         if (!user.getAccountStatus()
-                .equals(AccountStatus.CONFIRMED)) {
-            throw new DomainError("Cannot create post - NOT CONFIRMED ACCOUT");
+                 .equals(AccountStatus.CONFIRMED)) {
+            throw new DomainError("Cannot create post - NOT CONFIRMED ACCOUNT");
         }
         BlogPost post = mapper.mapToEntity(postRequest);
         post.setUser(user);
@@ -61,6 +61,12 @@ public class BlogManager extends DomainService implements BlogService {
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
         BlogPost post = blogPostRepository.findById(postId)
                                           .orElseThrow(domainError(DomainError.POST_NOT_FOUND));
+
+        if (user.getAccountStatus()
+                .equals(AccountStatus.CONFIRMED)) {
+            throw new DomainError("Cannot like post - NOT CONFIRMED ACCOUNT");
+        }
+
         if (post.getUser()
                 .getId()
                 .equals(userId)) {
