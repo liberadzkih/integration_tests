@@ -1,6 +1,5 @@
 package edu.iis.mto.blog.domain.repository;
 
-import edu.iis.mto.blog.domain.model.AccountStatus;
 import edu.iis.mto.blog.domain.model.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,50 +96,6 @@ public class UserRepositoryTest {
         repository.save(new UserBuilder().withFirstName("Dzban").withLastName("Pomarańczowy").withEmail("pomarańcza@p.lodz.pl").build());
         List<User> foundUsersList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(anythingOtherThanWhatAnyOfTheValuesContains, anythingOtherThanWhatAnyOfTheValuesContains, anythingOtherThanWhatAnyOfTheValuesContains);
         assertThat(foundUsersList, hasSize(0));
-    }
-
-    // USER BUILDER
-    private class UserBuilder {
-        private String firstName;
-        private String lastName;
-        private String email;
-        private AccountStatus accountStatus;
-
-        public UserBuilder() {
-            firstName = "";
-            lastName = "";
-            email = "";
-            accountStatus = AccountStatus.NEW;
-        }
-
-        public UserBuilder withFirstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public UserBuilder withLastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-
-        public UserBuilder withEmail(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public UserBuilder withAccountStatus(AccountStatus accountStatus) {
-            this.accountStatus = accountStatus;
-            return this;
-        }
-
-        public User build() {
-            User user = new User();
-            user.setFirstName(this.firstName);
-            user.setLastName(this.lastName);
-            user.setEmail(this.email);
-            user.setAccountStatus(this.accountStatus);
-            return user;
-        }
     }
 
 }
