@@ -61,7 +61,7 @@ public class BlogManagerTest {
 
     @Test
     public void userWithAccountStatusOtherThanConfirmedShouldNotBeAbleLikeAPost() {
-        User postCreatorUser = createUserWithIdAndStatus(USER_ID_TWO, AccountStatus.NEW);
+        User postCreatorUser = createUserWithIdAndStatus(USER_ID_TWO, AccountStatus.CONFIRMED);
         User newAccountUser = createUserWithIdAndStatus(USER_ID, AccountStatus.NEW);
         BlogPost blogPost = createPostWithUserId(postCreatorUser.getId());
 
@@ -73,7 +73,7 @@ public class BlogManagerTest {
 
     @Test
     public void userWithAccountStatusConfirmedShouldBeAbleToLikePost() {
-        User postCreatorUser = createUserWithIdAndStatus(USER_ID_TWO, AccountStatus.NEW);
+        User postCreatorUser = createUserWithIdAndStatus(USER_ID_TWO, AccountStatus.CONFIRMED);
         User confirmedAccountUser = createUserWithIdAndStatus(USER_ID, AccountStatus.CONFIRMED);
         BlogPost blogPost = createPostWithUserId(postCreatorUser.getId());
 
