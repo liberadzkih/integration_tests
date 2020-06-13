@@ -4,7 +4,6 @@ import edu.iis.mto.blog.domain.model.BlogPost;
 import edu.iis.mto.blog.domain.model.LikePost;
 import edu.iis.mto.blog.domain.model.User;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,7 @@ public class LikePostRepositoryTest {
 
     @Before
     public void setUp() {
-        repository.deleteAll();
-        user = new UserBuilder().withFirstName("Jan").withEmail("john@domain.com").build();
+        user = new UserBuilder().withFirstName("Jan").withEmail("john1@domain.com").build();
         blogPost = new BlogPost();
         blogPost.setEntry("Some entry");
         blogPost.setUser(user);

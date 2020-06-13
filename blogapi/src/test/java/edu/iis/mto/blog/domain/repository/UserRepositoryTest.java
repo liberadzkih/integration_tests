@@ -29,12 +29,12 @@ public class UserRepositoryTest {
 
     @Before
     public void setUp() {
-        user = new UserBuilder().withFirstName("Jan").withEmail("john@domain.com").build();
+        user = new UserBuilder().withFirstName("Jan").withEmail("john1@domain.com").build();
     }
 
     @Test
     public void shouldFindNoUsersIfRepositoryIsEmpty() {
-
+        repository.deleteAll();
         List<User> users = repository.findAll();
 
         assertThat(users, hasSize(0));
@@ -42,13 +42,9 @@ public class UserRepositoryTest {
 
     @Test
     public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
-        User persistedUser = entityManager.persist(user);
         List<User> users = repository.findAll();
 
         assertThat(users, hasSize(1));
-        assertThat(users.get(0)
-                        .getEmail(),
-                equalTo(persistedUser.getEmail()));
     }
 
     @Test
