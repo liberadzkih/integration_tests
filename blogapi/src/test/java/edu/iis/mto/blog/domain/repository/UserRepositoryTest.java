@@ -1,14 +1,8 @@
 package edu.iis.mto.blog.domain.repository;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
+import edu.iis.mto.blog.domain.model.AccountStatus;
+import edu.iis.mto.blog.domain.model.User;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import edu.iis.mto.blog.domain.model.AccountStatus;
-import edu.iis.mto.blog.domain.model.User;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -35,11 +31,11 @@ public class UserRepositoryTest {
     public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
 
-    @Ignore
     @Test
     public void shouldFindNoUsersIfRepositoryIsEmpty() {
 
@@ -48,7 +44,6 @@ public class UserRepositoryTest {
         assertThat(users, hasSize(0));
     }
 
-    @Ignore
     @Test
     public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
         User persistedUser = entityManager.persist(user);
@@ -60,7 +55,6 @@ public class UserRepositoryTest {
                 equalTo(persistedUser.getEmail()));
     }
 
-    @Ignore
     @Test
     public void shouldStoreANewUser() {
 
@@ -69,4 +63,44 @@ public class UserRepositoryTest {
         assertThat(persistedUser.getId(), notNullValue());
     }
 
+    @Test
+    public void shouldFindUserWhenFirstNameIsCorrect() {
+        String otherLastName = "Noname";
+        String otherEmail = "matthew@edu.p.lodz.pl";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName(), otherLastName, otherEmail);
+
+        assertThat(userList, hasSize(1));
+    }
+
+    @Test
+    public void shouldFindUserWhenLastNameIsCorrect() {
+        String otherFirstName = "Matthew";
+        String otherEmail = "matthew@edu.p.lodz.pl";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(otherFirstName, user.getLastName(), otherEmail);
+
+        assertThat(userList, hasSize(1));
+    }
+
+    @Test
+    public void shouldFindUserWhenEmailIsCorrect() {
+        String otherFirstName = "Matthew";
+        String otherLastName = "Noname";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(otherFirstName, otherLastName, user.getEmail());
+
+        assertThat(userList, hasSize(1));
+    }
+
+    @Test
+    public void shouldNotFindUser() {
+        String otherFirstName = "Matthew";
+        String otherLastName = "Noname";
+        String otherEmail = "matthew@edu.p.lodz.pl";
+        repository.save(user);
+        List<User> userList = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(otherFirstName, otherLastName, otherEmail);
+
+        assertThat(userList, hasSize(0));
+    }
 }
