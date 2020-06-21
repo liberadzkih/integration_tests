@@ -1,8 +1,13 @@
 package edu.iis.mto.blog.rest.test;
 
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 
 import io.restassured.RestAssured;
+
+import static io.restassured.RestAssured.given;
 
 public class FunctionalTests {
 
@@ -27,5 +32,18 @@ public class FunctionalTests {
         }
         RestAssured.baseURI = baseHost;
     }
+
+    public Response addUser(String email){
+        JSONObject user = new JSONObject().put("email",email);
+        return given().accept(ContentType.JSON)
+                      .header("Content-Type", "application/json;charset=UTF-8")
+                      .body(user.toString())
+                      .expect()
+                      .log()
+                      .all()
+                      .when()
+                      .post("/blog/user");
+    }
+
 
 }
