@@ -1,6 +1,7 @@
 package edu.iis.mto.blog.api;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +23,8 @@ import edu.iis.mto.blog.api.request.UserRequest;
 import edu.iis.mto.blog.dto.Id;
 import edu.iis.mto.blog.services.BlogService;
 import edu.iis.mto.blog.services.DataFinder;
+
+import javax.persistence.EntityNotFoundException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BlogApi.class)
@@ -76,6 +79,16 @@ public class BlogApiTest {
         user.setFirstName("John");
         user.setLastName("Steward");
         return user;
+    }
+
+    @Test
+    public void getBlogUserShouldResponseWithStatusNotFoundIfUserIsMissing() throws Exception {
+        Long newUserId = 1L;
+        when(finder.getUserData(newUserId)).thenThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/blog/user/"+ newUserId)
+                .accept(MediaType.APPLICATION_JSON))
+           .andExpect(status().isNotFound());
     }
 
 }
