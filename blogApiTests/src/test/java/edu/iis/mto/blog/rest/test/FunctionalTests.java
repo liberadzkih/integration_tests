@@ -45,5 +45,9 @@ public class FunctionalTests {
                       .post("/blog/user");
     }
 
+    public long getIdFromResponse(Response response) {
+        JSONObject result = new JSONObject(response.asString());
+        return result.getLong("id");
+    }
 
 }
