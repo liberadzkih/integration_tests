@@ -23,6 +23,17 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String email, AccountStatus accountStatus) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.accountStatus = accountStatus;
+    }
+
+
     public String getFirstName() {
         return firstName;
     }

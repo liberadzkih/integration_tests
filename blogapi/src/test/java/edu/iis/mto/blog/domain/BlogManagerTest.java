@@ -2,9 +2,12 @@ package edu.iis.mto.blog.domain;
 
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import edu.iis.mto.blog.domain.errors.DomainError;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -19,6 +22,8 @@ import edu.iis.mto.blog.domain.model.User;
 import edu.iis.mto.blog.domain.repository.UserRepository;
 import edu.iis.mto.blog.mapper.BlogDataMapper;
 import edu.iis.mto.blog.services.BlogService;
+
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -43,5 +48,15 @@ public class BlogManagerTest {
         User user = userParam.getValue();
         assertThat(user.getAccountStatus(), Matchers.equalTo(AccountStatus.NEW));
     }
+
+    @Test
+    public void canNotAddLikeForUserWithStatusNotConfirmed() {
+        User user = new User("John", "Steward", "john@domain.com",AccountStatus.NEW);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Assertions.assertThrows(DomainError.class,()->blogService.addLikeToPost(1L,1L));
+
+    }
+
 
 }
