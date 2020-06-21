@@ -10,20 +10,23 @@ import static io.restassured.RestAssured.given;
 
 public class CreatePostTest extends FunctionalTests {
 
-    private static final String USER_API = "/blog/user/1/post";
+    private static final String USER_API = "/blog/user/id/post";
+    private static final String EMAIL = "pawel2@domain.com";
 
     @Test
     public void onlyConfirmedUserCanAddPost() {
+        Response response = addUser(EMAIL);
+        Long id = getIdFromResponse(response);
         JSONObject jsonObj = new JSONObject().put("entry", "tresc posta pierwszego");
 
         given().accept(ContentType.JSON)
-                .header("Content-Type", "application/json;charset=UTF-8")
-                .body(jsonObj.toString())
-                .expect()
-                .log()
-                .all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .when()
-                .post(USER_API);
+               .header("Content-Type", "application/json;charset=UTF-8")
+               .body(jsonObj.toString())
+               .expect()
+               .log()
+               .all()
+               .statusCode(HttpStatus.SC_CREATED)
+               .when()
+               .post(USER_API.replace("id", id.toString()));
     }
 }
