@@ -1,6 +1,8 @@
 package edu.iis.mto.blog.api;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +23,11 @@ import edu.iis.mto.blog.api.request.UserRequest;
 import edu.iis.mto.blog.dto.Id;
 import edu.iis.mto.blog.services.BlogService;
 import edu.iis.mto.blog.services.DataFinder;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import javax.persistence.EntityNotFoundException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BlogApi.class)
@@ -46,15 +53,39 @@ public class BlogApiTest {
         String content = writeJson(user);
 
         mvc.perform(post("/blog/user").contentType(MediaType.APPLICATION_JSON)
-                                      .accept(MediaType.APPLICATION_JSON)
-                                      .content(content))
-           .andExpect(status().isCreated())
-           .andExpect(content().string(writeJson(new Id(newUserId))));
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(writeJson(new Id(newUserId))));
+    }
+
+    @Test
+    public void shouldReturn409HttpStatus() throws Exception {
+        UserRequest user = new UserRequest();
+        user.setEmail("john@domain.com");
+        user.setFirstName("John");
+        user.setLastName("Steward");
+        when(blogService.createUser(user)).thenThrow(DataIntegrityViolationException.class);
+        String content = writeJson(user);
+
+        mvc.perform(post("/blog/user").contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void shouldReturn404HttpStatus() throws Exception {
+        when(finder.getUserData(anyLong())).thenThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/blog/user/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     private String writeJson(Object obj) throws JsonProcessingException {
         return new ObjectMapper().writer()
-                                 .writeValueAsString(obj);
+                .writeValueAsString(obj);
     }
 
 }
