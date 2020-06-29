@@ -3,7 +3,7 @@ package edu.iis.mto.blog.domain.repository;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -30,6 +30,7 @@ import edu.iis.mto.blog.domain.model.User;
     @Before public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
@@ -53,6 +54,59 @@ import edu.iis.mto.blog.domain.model.User;
         User persistedUser = repository.save(user);
 
         assertThat(persistedUser.getId(), notNullValue());
+    }
+
+    @Test public void findUserByAllCorrectData_shouldEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Jan", "Kowalski",
+                "john@domain.com");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void findUserOnlyCorrectFirstName_shouldEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Jan", "-", "-");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void findUserOnlyCorrectLastName_shouldEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("-", "Kowalski", "-");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void findUserOnlyCorrectEmail_shouldEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("-", "-",
+                "john@domain.com");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void findUserIncorrectInformation_shouldNotEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("-", "-", "-");
+        assertFalse("users list should not contain the user", users.contains(user));
+        assertEquals(0, users.size());
+    }
+
+    @Test public void findUserByAllCorrectData_mixedLetterCase_shouldEndInSuccess() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("JAN", "KoWaLSkI",
+                "JOHn@dOmAiN.COm");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
+    }
+
+    @Test public void findUserEmptyQuery_shouldFindAllUsers() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("", "",
+                "");
+        assertTrue("users list should contain the user", users.contains(user));
+        assertEquals(1, users.size());
     }
 
 }
