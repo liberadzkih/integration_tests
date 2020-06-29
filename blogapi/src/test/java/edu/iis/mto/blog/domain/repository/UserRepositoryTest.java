@@ -19,50 +19,36 @@ import org.springframework.test.context.junit4.SpringRunner;
 import edu.iis.mto.blog.domain.model.AccountStatus;
 import edu.iis.mto.blog.domain.model.User;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-public class UserRepositoryTest {
+@RunWith(SpringRunner.class) @DataJpaTest public class UserRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
+    @Autowired private TestEntityManager entityManager;
 
-    @Autowired
-    private UserRepository repository;
+    @Autowired private UserRepository repository;
 
     private User user;
 
-    @Before
-    public void setUp() {
+    @Before public void setUp() {
         user = new User();
         user.setFirstName("Jan");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
 
-    @Ignore
-    @Test
-    public void shouldFindNoUsersIfRepositoryIsEmpty() {
+    @Test public void shouldFindNoUsersIfRepositoryIsEmpty() {
 
         List<User> users = repository.findAll();
-
         assertThat(users, hasSize(0));
     }
 
-    @Ignore
-    @Test
-    public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
+    @Test public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
         User persistedUser = entityManager.persist(user);
         List<User> users = repository.findAll();
 
         assertThat(users, hasSize(1));
-        assertThat(users.get(0)
-                        .getEmail(),
-                equalTo(persistedUser.getEmail()));
+        assertThat(users.get(0).getEmail(), equalTo(persistedUser.getEmail()));
     }
 
-    @Ignore
-    @Test
-    public void shouldStoreANewUser() {
+    @Test public void shouldStoreANewUser() {
 
         User persistedUser = repository.save(user);
 
