@@ -73,9 +73,14 @@ public class BlogManagerTest {
     @Test
     public void addLikeToPostShouldReturnAccountNotConfirmedDomainError() {
         Long userId = blogService.createUser(new UserRequest("John", "Steward", "john@domain.com"));
-        verify(userRepository).save(userParam.capture());
-        User user = userParam.getValue();
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(user));
+        blogService.createUser(new UserRequest("Jan", "Nowak", "jan@domain.com"));
+        verify(userRepository, times(2)).save(userParam.capture());
+        List<User> userList = userParam.getAllValues();
+        User user0 = userList.get(0);
+        user0.setAccountStatus(AccountStatus.CONFIRMED);
+        User user1 = userList.get(1);
+        user1.setId(2L);
+        Mockito.when(userRepository.findById(user0.getId())).thenReturn(java.util.Optional.ofNullable(user0));
         Long postId = blogService.createPost(userId, new PostRequest());
         verify(blogPostRepository).save(blogParam.capture());
         BlogPost blogPost = blogParam.getValue();
@@ -83,8 +88,9 @@ public class BlogManagerTest {
 
         expectedException.expect(DomainError.class);
         expectedException.expectMessage("user account has not yet been confirmed");
+        Mockito.when(userRepository.findById(user1.getId())).thenReturn(java.util.Optional.ofNullable(user1));
 
-        blogService.addLikeToPost(userId, postId);
+        blogService.addLikeToPost(user1.getId(), postId);
     }
 
     @Test
@@ -95,6 +101,7 @@ public class BlogManagerTest {
         List<User> userList = userParam.getAllValues();
         User user = userList.get(0);
         user.setId(1L);
+        user.setAccountStatus(AccountStatus.CONFIRMED);
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         PostRequest postRequest = new PostRequest();
         postRequest.setEntry("test");
