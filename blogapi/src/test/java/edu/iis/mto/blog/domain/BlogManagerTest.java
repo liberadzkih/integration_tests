@@ -78,6 +78,7 @@ public class BlogManagerTest {
 		List<User> temp = userParam.getAllValues();
 		User user = temp.get(0);
 		user.setId(1L);
+		user.setAccountStatus(AccountStatus.CONFIRMED);
 		Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
 		PostRequest postRequest = new PostRequest();
@@ -100,24 +101,32 @@ public class BlogManagerTest {
 
 	@Test
 	public void shouldNotAllowToLikePostWithoutConfirmedUserStatus() {
-		Long userID = blogService.createUser(new UserRequest("John", "Steward", "john@domain.com"));
-		verify(userRepository).save(userParam.capture());
-		User user = userParam.getValue();
-		user.setId(userID);
+		blogService.createUser(new UserRequest("John", "Steward", "john@domain.com"));
+		blogService.createUser(new UserRequest("Jacek", "Wrobel", "arr@domain.com"));
+
+		verify(userRepository, times(2)).save(userParam.capture());
+		List<User> temp = userParam.getAllValues();
+		User user = temp.get(0);
+		user.setId(1L);
+		user.setAccountStatus(AccountStatus.CONFIRMED);
 		Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
 		PostRequest postRequest = new PostRequest();
 		postRequest.setEntry("test entry");
-		Long postId = blogService.createPost(user.getId(), postRequest);
+		blogService.createPost(user.getId(), postRequest);
 		verify(blogPostRepository).save(blogPostParam.capture());
 		BlogPost blogPost = blogPostParam.getValue();
-		blogPost.setId(postId);
-		Mockito.when(blogPostRepository.findById(postId)).thenReturn(Optional.of(blogPost));
+		blogPost.setId(3L);
+		Mockito.when(blogPostRepository.findById(blogPost.getId())).thenReturn(Optional.of(blogPost));
+
+		User user2 = temp.get(1);
+		user2.setId(2L);
+		Mockito.when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
 
 		exceptionRule.expect(DomainError.class);
 		exceptionRule.expectMessage("user account is not confirmed");
 
-		assertTrue(blogService.addLikeToPost(user.getId(), blogPost.getId()));
+		assertTrue(blogService.addLikeToPost(user2.getId(), blogPost.getId()));
 
 	}
 }
