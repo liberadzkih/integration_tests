@@ -40,6 +40,9 @@ public class BlogManager extends DomainService implements BlogService {
     public Long createPost(Long userId, PostRequest postRequest) {
         User user = userRepository.findById(userId)
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
+        if(!user.getAccountStatus().equals(AccountStatus.CONFIRMED)){
+            throw new DomainError(DomainError.ACCOUNT_NOT_CONFIRMED);
+        }
         BlogPost post = mapper.mapToEntity(postRequest);
         post.setUser(user);
         blogPostRepository.save(post);
@@ -50,6 +53,9 @@ public class BlogManager extends DomainService implements BlogService {
     public boolean addLikeToPost(Long userId, Long postId) {
         User user = userRepository.findById(userId)
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
+        if(!user.getAccountStatus().equals(AccountStatus.CONFIRMED)){
+            throw new DomainError(DomainError.ACCOUNT_NOT_CONFIRMED);
+        }
         BlogPost post = blogPostRepository.findById(postId)
                                           .orElseThrow(domainError(DomainError.POST_NOT_FOUND));
         if (post.getUser()
