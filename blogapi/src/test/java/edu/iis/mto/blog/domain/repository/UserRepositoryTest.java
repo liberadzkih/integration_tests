@@ -1,14 +1,8 @@
 package edu.iis.mto.blog.domain.repository;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
+import edu.iis.mto.blog.domain.model.AccountStatus;
+import edu.iis.mto.blog.domain.model.User;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import edu.iis.mto.blog.domain.model.AccountStatus;
-import edu.iis.mto.blog.domain.model.User;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -35,11 +31,11 @@ public class UserRepositoryTest {
     public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
 
-    @Ignore
     @Test
     public void shouldFindNoUsersIfRepositoryIsEmpty() {
 
@@ -48,7 +44,6 @@ public class UserRepositoryTest {
         assertThat(users, hasSize(0));
     }
 
-    @Ignore
     @Test
     public void shouldFindOneUsersIfRepositoryContainsOneUserEntity() {
         User persistedUser = entityManager.persist(user);
@@ -60,7 +55,7 @@ public class UserRepositoryTest {
                 equalTo(persistedUser.getEmail()));
     }
 
-    @Ignore
+
     @Test
     public void shouldStoreANewUser() {
 
@@ -69,4 +64,75 @@ public class UserRepositoryTest {
         assertThat(persistedUser.getId(), notNullValue());
     }
 
+    @Test
+    public void findByShouldReturnOneRecordFoundByFirstName() {
+        repository.save(user);
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(1));
+        assertThat(result.get(0), equalTo(user));
+    }
+
+    @Test
+    public void findByShouldReturnOneRecordFoundByLastName() {
+        repository.save(user);
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName(), "Nonexistent");
+        assertThat(result, hasSize(1));
+        assertThat(result.get(0), equalTo(user));
+    }
+
+    @Test
+    public void findByShouldReturnOneRecordFoundByEmail() {
+        repository.save(user);
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail());
+        assertThat(result, hasSize(1));
+        assertThat(result.get(0), equalTo(user));
+    }
+
+    @Test
+    public void findByShouldReturnZeroRecords() {
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail());
+        assertThat(result, hasSize(0));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName(), "Nonexistent");
+        assertThat(result, hasSize(0));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(0));
+    }
+
+    @Test
+    public void findByShouldReturnMultipleRecords() {
+        int howManyRecords = 10;
+        String firstName = "jan";
+        String lastName = "kowalski";
+        String email = "email@domain.com";
+
+        for (int i = 0; i < howManyRecords; i++) {
+            User user = new User();
+            user.setFirstName(firstName + i);
+            user.setLastName(lastName + i);
+            user.setEmail(i + email);
+            user.setAccountStatus(AccountStatus.NEW);
+            repository.save(user);
+        }
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(firstName, lastName, email);
+        assertThat(result, hasSize(howManyRecords));
+    }
+
+    @Test
+    public void findByLowerAndUpperCase() {
+        repository.save(user);
+        List<User> result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail().toLowerCase());
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName().toLowerCase(), "Nonexistent");
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName().toLowerCase(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(1));
+
+        repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", "Nonexistent", user.getEmail().toUpperCase());
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Nonexistent", user.getLastName().toUpperCase(), "Nonexistent");
+        assertThat(result, hasSize(1));
+        result = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(user.getFirstName().toUpperCase(), "Nonexistent", "Nonexistent");
+        assertThat(result, hasSize(1));
+
+    }
 }
