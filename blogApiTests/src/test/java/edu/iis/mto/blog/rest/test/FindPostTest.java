@@ -28,7 +28,7 @@ public class FindPostTest extends FunctionalTests {
     }
 
     @Test
-    public void findPostReturnsProperNumberOfLikes() {
+    public void findPost_shouldReturnUpdatedCountOfLikes() {
         String postId = "1";
         checkLikesCount(postId, 0);
 
