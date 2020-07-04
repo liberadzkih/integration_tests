@@ -60,7 +60,7 @@ import java.util.Optional;
         verify(userRepository, times(2)).save(userParam.capture());
 
         List<User> users = userParam.getAllValues();
-        setUpUser(users.get(0), 1L, AccountStatus.NEW);
+        setUpUser(users.get(0), 1L, AccountStatus.CONFIRMED);
         setUpUser(users.get(1), 2L, AccountStatus.NEW);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
@@ -82,7 +82,7 @@ import java.util.Optional;
         verify(userRepository, times(2)).save(userParam.capture());
 
         List<User> users = userParam.getAllValues();
-        setUpUser(users.get(0), 1L, AccountStatus.NEW);
+        setUpUser(users.get(0), 1L, AccountStatus.CONFIRMED);
         setUpUser(users.get(1), 2L, AccountStatus.CONFIRMED);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
