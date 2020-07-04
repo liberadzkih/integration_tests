@@ -49,7 +49,6 @@ public class LikePostRepositoryTest {
 
         entityManager.persist(user);
         entityManager.persist(blogPost);
-        likePostRepository.save(likePost);
     }
 
     @Test
@@ -60,15 +59,16 @@ public class LikePostRepositoryTest {
 
     @Test
     public void savingCorrectPost_shouldBeProperlySavedInRepository() {
-        List<LikePost> post = likePostRepository.findAll();
-        assertEquals(post.get(0), likePost);
+        LikePost persistedLikePost = likePostRepository.save(likePost);
+        assertNotEquals(persistedLikePost.getId(), null);
     }
 
     @Test
     public void findByCorrectUserAndCorrectPost_shouldReturnPost() {
+        LikePost persistedLikePost = likePostRepository.save(likePost);
         Optional<LikePost> post = likePostRepository.findByUserAndPost(user, blogPost);
         assertTrue(post.isPresent());
-        assertEquals(post.get(), likePost);
+        assertEquals(persistedLikePost, post.get());
     }
 
     @Test
