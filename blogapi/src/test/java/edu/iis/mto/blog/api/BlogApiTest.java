@@ -1,6 +1,8 @@
 package edu.iis.mto.blog.api;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +24,8 @@ import edu.iis.mto.blog.api.request.UserRequest;
 import edu.iis.mto.blog.dto.Id;
 import edu.iis.mto.blog.services.BlogService;
 import edu.iis.mto.blog.services.DataFinder;
+
+import javax.persistence.EntityNotFoundException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BlogApi.class)
@@ -50,6 +55,19 @@ public class BlogApiTest {
                                       .content(content))
            .andExpect(status().isCreated())
            .andExpect(content().string(writeJson(new Id(newUserId))));
+    }
+
+    @Test public void userNotFoundShouldResultIn404Response() throws Exception {
+        when(finder.getUserData(any())).thenThrow(EntityNotFoundException.class);
+        mvc.perform(get("/blog/user/{id}", 18)).andExpect(status().isNotFound());
+    }
+
+    @Test public void dataIntegrityViolationExceptionShouldResultIn409Response() throws Exception {
+        when(blogService.createUser(any())).thenThrow(DataIntegrityViolationException.class);
+        String content = writeJson(new UserRequest());
+        mvc.perform(post("/blog/user").contentType(MediaType.APPLICATION_JSON)
+                                      .accept(MediaType.APPLICATION_JSON)
+                                      .content(content)).andExpect(status().isConflict());
     }
 
     private String writeJson(Object obj) throws JsonProcessingException {
