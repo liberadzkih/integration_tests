@@ -35,6 +35,7 @@ public class UserRepositoryTest {
     public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
@@ -53,9 +54,7 @@ public class UserRepositoryTest {
         List<User> users = repository.findAll();
 
         assertThat(users, hasSize(1));
-        assertThat(users.get(0)
-                        .getEmail(),
-                equalTo(persistedUser.getEmail()));
+        assertThat(users.get(0).getEmail(), equalTo(persistedUser.getEmail()));
     }
 
     @Test
@@ -64,6 +63,38 @@ public class UserRepositoryTest {
         User persistedUser = repository.save(user);
 
         assertThat(persistedUser.getId(), notNullValue());
+    }
+
+    @Test
+    public void shouldFindUserByFirstNameIgnoreLetterCase() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("JaN", "sample",
+                "sample");
+        assertThat(users.contains(user), equalTo(true));
+    }
+
+    @Test
+    public void shouldFindUserByLastNameIgnoreLetterCase() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("sample", "KoWalSkI",
+                "sample");
+        assertThat(users.contains(user), equalTo(true));
+    }
+
+    @Test
+    public void shouldFindUserByEmailIgnoreLetterCase() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("sample", "KoWalSkI",
+                "joHN@doMaIN.CoM");
+        assertThat(users.contains(user), equalTo(true));
+    }
+
+    @Test
+    public void shouldNotFindUser() {
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Mike", "Wazowski",
+                "other");
+        assertThat(users.contains(user), equalTo(false));
     }
 
 }
