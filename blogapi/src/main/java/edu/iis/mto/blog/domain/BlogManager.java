@@ -33,7 +33,7 @@ public class BlogManager extends DomainService implements BlogService {
     public Long createUser(UserRequest userRequest) {
         Optional<User> userList = userRepository.findByEmail(userRequest.getEmail());
         if (userList.isPresent()) {
-            throw new DataIntegrityViolationException("Email in use");
+            throw new DataIntegrityViolationException("Email already exists");
         }
 
         User user = mapper.mapToEntity(userRequest);
@@ -63,6 +63,12 @@ public class BlogManager extends DomainService implements BlogService {
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
         BlogPost post = blogPostRepository.findById(postId)
                                           .orElseThrow(domainError(DomainError.POST_NOT_FOUND));
+
+        if (user.getAccountStatus()
+                .equals(AccountStatus.CONFIRMED)) {
+            throw new DomainError("Error: Account not confirmed");
+        }
+
         if (post.getUser()
                 .getId()
                 .equals(userId)) {
