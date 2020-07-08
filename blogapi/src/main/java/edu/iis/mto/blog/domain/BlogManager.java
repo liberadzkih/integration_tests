@@ -2,6 +2,7 @@ package edu.iis.mto.blog.domain;
 
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,11 @@ public class BlogManager extends DomainService implements BlogService {
 
     @Override
     public Long createUser(UserRequest userRequest) {
+        Optional<User> userList = userRepository.findByEmail(userRequest.getEmail());
+        if (userList.isPresent()) {
+            throw new DataIntegrityViolationException("Email in use");
+        }
+
         User user = mapper.mapToEntity(userRequest);
         user.setAccountStatus(AccountStatus.NEW);
         userRepository.save(user);
@@ -40,6 +46,11 @@ public class BlogManager extends DomainService implements BlogService {
     public Long createPost(Long userId, PostRequest postRequest) {
         User user = userRepository.findById(userId)
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
+
+        if (!user.getAccountStatus().equals(AccountStatus.CONFIRMED)) {
+            throw new DomainError("Error: Account not confirmed");
+        }
+
         BlogPost post = mapper.mapToEntity(postRequest);
         post.setUser(user);
         blogPostRepository.save(post);
