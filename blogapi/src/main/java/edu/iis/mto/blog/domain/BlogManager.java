@@ -64,7 +64,7 @@ public class BlogManager extends DomainService implements BlogService {
         BlogPost post = blogPostRepository.findById(postId)
                                           .orElseThrow(domainError(DomainError.POST_NOT_FOUND));
 
-        if (user.getAccountStatus()
+        if (!user.getAccountStatus()
                 .equals(AccountStatus.CONFIRMED)) {
             throw new DomainError("Error: Account not confirmed");
         }
