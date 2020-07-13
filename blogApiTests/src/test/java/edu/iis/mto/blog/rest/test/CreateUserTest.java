@@ -25,4 +25,32 @@ public class CreateUserTest extends FunctionalTests {
                .when()
                .post(USER_API);
     }
+
+    @Test
+    public void dataIntegrityViolation_shouldReturn409Response() {
+        JSONObject jsonObj = new JSONObject();
+        given().accept(ContentType.JSON)
+                .header("Content-Type","application/json;charset=UTF-8")
+                .body(jsonObj.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_CONFLICT)
+                .when()
+                .post(USER_API);
+    }
+
+    @Test
+    public void emailAlreadyInUse_shouldGenerateConflict() {
+        JSONObject jsonObj = new JSONObject().put("email", "tracy1@domain.com");
+        given().accept(ContentType.JSON)
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObj.toString())
+                .expect()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_CONFLICT)
+                .when()
+                .post(USER_API);
+    }
 }
