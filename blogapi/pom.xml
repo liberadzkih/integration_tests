@@ -26,6 +26,8 @@
 		<springfox.version>2.6.1</springfox.version>
 		<springdoc.version>1.3.9</springdoc.version>
 		<modelmapper.version>2.3.7</modelmapper.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<dependencies>
