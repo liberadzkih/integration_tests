@@ -49,15 +49,17 @@ public class BlogManager extends DomainService implements BlogService {
 
     @Override
     public boolean addLikeToPost(Long userId, Long postId) {
+
         User user = userRepository.findById(userId)
                                   .orElseThrow(domainError(DomainError.USER_NOT_FOUND));
         BlogPost post = blogPostRepository.findById(postId)
                                           .orElseThrow(domainError(DomainError.POST_NOT_FOUND));
-        if (post.getUser()
-                .getId()
-                .equals(userId)) {
+        if (post.getUser().getId().equals(userId)) {
             throw new DomainError(DomainError.SELF_LIKE);
         }
+        if (user.getAccountStatus() != AccountStatus.CONFIRMED)
+            throw new DomainError(DomainError.USER_NOT_CONFIRMED);
+
         Optional<LikePost> existingLikeForPost = likePostRepository.findByUserAndPost(user, post);
         if (existingLikeForPost.isPresent()) {
             return false;
